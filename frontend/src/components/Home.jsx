@@ -11,7 +11,7 @@ export const Home = () => {
   const [join, setJoin] = useState(true);
   async function getId() {
     try {
-      const res = await fetch("http://localhost:7000/getId");
+      const res = await fetch("https://codecolab-e7rb.onrender.com/getId");
       const data = await res.json();
       setId(data.id);
       navigate(`/room/${data.id}`, {
