@@ -26,6 +26,7 @@ wss.on("connection", (ws) => {
                 socket: ws,
                 username: data.username
             });
+            console.log(rooms);
             const participants = rooms
                 .get(data.roomId)
                 .map(client => client.username);
