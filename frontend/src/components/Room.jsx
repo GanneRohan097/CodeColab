@@ -13,6 +13,8 @@ const Room = () => {
     const [language, setLanguage] = useState("javascript");
     const [participants, setParticipants] = useState([]);
     const [code, setCode] = useState("// Start coding...");
+    //Without DB how data is sharing?
+    //The data is not being stored anywhere. It is only living in your server's RAM
     useEffect(() => {
         socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/
         socket.current.onopen = () => {
@@ -81,9 +83,9 @@ const Room = () => {
                     </div>
 
                     <div className="flex gap-3">
-                        <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md">
+                        {/* <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md">
                             Run
-                        </button>
+                        </button> */}
 
                         <button
                             onClick={() => navigate("/")}
@@ -148,7 +150,7 @@ const Room = () => {
                     />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                {/* <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-[#0F172A] rounded-lg p-4">
                         <h2 className="text-white font-semibold mb-3">Input</h2>
 
@@ -165,7 +167,7 @@ const Room = () => {
                             Output will appear here...
                         </pre>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
