@@ -19,8 +19,7 @@ const Room = () => {
         socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/
         socket.current.onopen = () => {
             console.log("Connected to server");
-
-            //socket.send("Hello server...");
+            //socket.send("Hello server..");
             //Now the browser will send the text "Hello Server" immediately after connecting.
             socket.current.send(
                 JSON.stringify({
