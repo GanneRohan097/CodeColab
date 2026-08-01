@@ -14,7 +14,7 @@ const Room = () => {
     const [participants, setParticipants] = useState([]);
     const [code, setCode] = useState("// Start coding...");
     useEffect(() => {
-        socket.current = new WebSocket("wss://https://codecolab-e7rb.onrender.com/");
+        socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/
         socket.current.onopen = () => {
             console.log("Connected to server");
 
