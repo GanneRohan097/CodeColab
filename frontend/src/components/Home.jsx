@@ -9,11 +9,15 @@ export const Home = () => {
   const [enteredId, setEnteredId] = useState();
   const navigate = useNavigate();
   const [join, setJoin] = useState(true);
-  async function getId() {
+  const [loading, setLoading] = useState(false);
+  async function getId(e) {
+    e.preventDefault();
     try {
+      setLoading(true);
       const res = await fetch("https://codecolab-e7rb.onrender.com/getId");//http://localhost:7000/getId
       const data = await res.json();
       setId(data.id);
+      setLoading(false);
       navigate(`/room/${data.id}`, {
         state: {
           name: adminName,
@@ -25,14 +29,14 @@ export const Home = () => {
     }
   }
   function joinRoom() {
-  
-      navigate(`/room/${enteredId}`, {
-        state: {
-          name,
-          isAdmin: false
-        }
-      });
-    
+
+    navigate(`/room/${enteredId}`, {
+      state: {
+        name,
+        isAdmin: false
+      }
+    });
+
   }
 
   return (
@@ -44,7 +48,7 @@ export const Home = () => {
           <p className="text-gray-600 mb-6">
             Create a new room and share the room ID.
           </p>
-
+         <form onSubmit={getId}>
           <div className="relative mb-4">
             <FaUser className="absolute left-3 top-3.5 text-gray-400" />
             <input
@@ -52,17 +56,28 @@ export const Home = () => {
               value={adminName}
               onChange={(e) => setAdminName(e.target.value)}
               placeholder="Enter your name"
+              required
               className="w-full border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <div>
 
+          </div>
           <button
-            onClick={getId}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md flex items-center justify-center gap-2"
+          type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 h-12 rounded-md flex items-center justify-center gap-2"
           >
             <FaPlus />
+
             Create Room
+            {loading &&
+              <div className="relative bg-blac w-10 h-10  animate-spin [animation-duration:0.3s]">
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow-lg"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-black rounded-full shadow-lg"></div>
+              </div>
+            }
           </button>
+          </form>
 
           {id !== 0 && (
             <div className="mt-5 border rounded-md p-3 bg-gray-50 flex justify-between items-center">
@@ -107,7 +122,7 @@ export const Home = () => {
 
           <button
             onClick={() => joinRoom()}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md flex items-center justify-center gap-2">
+            className="w-full bg-green-600 hover:bg-green-700 text-white h-12 py-2 rounded-md flex items-center justify-center gap-2">
             <FaSignInAlt />
             Join Room
           </button>
