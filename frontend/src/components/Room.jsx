@@ -48,7 +48,7 @@ const Room = () => {
                 setLeavingUser(data.username);
                 setTimeout(() => {
                     setLeavingUser("");
-                }, 5000);
+                }, 8500);
             }
         }
         // ⬆️ receives msg from server
@@ -71,7 +71,7 @@ const Room = () => {
         setTimeout(() => {
             setLoading(false);
             navigate("/");
-        }, 3000);
+        }, 9000);
     }
     return (
         <div className="min-h-screen bg-gray-100">
