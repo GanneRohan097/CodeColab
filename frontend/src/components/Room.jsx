@@ -12,11 +12,13 @@ const Room = () => {
     const isAdmin = state?.isAdmin;
     const [language, setLanguage] = useState("javascript");
     const [participants, setParticipants] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [code, setCode] = useState("// Start coding...");
+    const [leavingUser, setLeavingUser] = useState("");
     //Without DB how data is sharing?
     //The data is not being stored anywhere. It is only living in your server's RAM
     useEffect(() => {
-        socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/
+        socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/  wss://codecolab-e7rb.onrender.com/
         socket.current.onopen = () => {
             console.log("Connected to server");
             //socket.send("Hello server..");
@@ -39,8 +41,14 @@ const Room = () => {
                 setParticipants(data.users);
             }
             //console.log(participants)
-            if(data.type==="code-change"){
+            if (data.type === "code-change") {
                 setCode(data.code);
+            }
+            if (data.type === "leaving-room") {
+                setLeavingUser(data.username);
+                setTimeout(() => {
+                    setLeavingUser("");
+                }, 5000);
             }
         }
         // ⬆️ receives msg from server
@@ -48,6 +56,23 @@ const Room = () => {
             socket.current.close();
         };
     }, []);
+    async function leave() {
+        setLoading(true);
+        socket.current.send(
+            JSON.stringify({
+                type: "leave-room",
+                roomId: id,
+                username: userName
+            })
+        );
+        setTimeout(() => {
+            socket.current.close();
+        }, 300);
+        setTimeout(() => {
+            setLoading(false);
+            navigate("/");
+        }, 3000);
+    }
     return (
         <div className="min-h-screen bg-gray-100">
             <div className="max-w-7xl mx-auto p-6">
@@ -87,14 +112,23 @@ const Room = () => {
                         </button> */}
 
                         <button
-                            onClick={() => navigate("/")}
-                            className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md"
+                            onClick={() => leave()}
+                            className="bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded-md"
                         >
-                            Leave Room
+
+                            {loading ? <div className="relative bg-blac w-10 h-10  animate-spin [animation-duration:0.3s]">
+                                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-3 h-3 bg-yellow-300 rounded-full shadow-lg"></div>
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow-lg"></div>
+                            </div>
+                                : "Leave Room"}
                         </button>
                     </div>
                 </div>
-
+                {!leavingUser && (
+                    <div className="flex bg-yellow-500 border border-yellow-300 font-semibold px-4 py-1  rounded mb-4 animate-pulse">
+                        {(leavingUser===userName)?"You":<p className="mr-1">{leavingUser} is</p>} leaving the room...
+                    </div>
+                )}
                 <div className="bg-white rounded-lg p-5 mb-6">
                     <h2 className="text-lg font-semibold mb-4">
                         Participants ({participants.length})
@@ -134,14 +168,14 @@ const Room = () => {
                         theme="blue-dark"
                         beforeMount={handleEditorWillMount}
                         value={code}
-                        onChange={(value)=>{
+                        onChange={(value) => {
                             const newCode = value || "";
                             setCode(newCode);
 
                             socket.current.send(
                                 JSON.stringify({
-                                    type:"code-change",
-                                    roomId:id,
+                                    type: "code-change",
+                                    roomId: id,
                                     code: newCode
                                 })
                             );

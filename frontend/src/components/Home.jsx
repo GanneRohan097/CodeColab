@@ -14,7 +14,7 @@ export const Home = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch("https://codecolab-e7rb.onrender.com/getId");//http://localhost:7000/getId
+      const res = await fetch("https://codecolab-e7rb.onrender.com/getId");//http://localhost:7000/getId  https://codecolab-e7rb.onrender.com/getId
       const data = await res.json();
       setId(data.id);
       setLoading(false);
