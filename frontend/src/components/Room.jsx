@@ -124,7 +124,7 @@ const Room = () => {
                         </button>
                     </div>
                 </div>
-                {!leavingUser && (
+                {leavingUser && (
                     <div className="flex bg-yellow-500 border border-yellow-300 font-semibold px-4 py-1  rounded mb-4 animate-pulse">
                         {(leavingUser===userName)?"You":<p className="mr-1">{leavingUser} is</p>} leaving the room...
                     </div>
