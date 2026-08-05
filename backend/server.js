@@ -55,6 +55,16 @@ wss.on("connection", (ws) => {
 
             }
         }
+        if(data.type==="leave-room"){
+            for(const clients of rooms.get(data.roomId)){
+                 clients.socket.send(
+                    JSON.stringify({
+                        type:"leaving-room",
+                        username: data.username
+                    })
+                 );
+            }
+        }
 
         //two way communication
     })
