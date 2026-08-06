@@ -100,6 +100,22 @@ app.get('/getId', (req, res) => {
     });
 
 })
+
+app.get('/join/:id',(req,res)=>{
+    const id = req.params.id;
+    if(rooms.has(id)){
+        res.status(200).json({
+            success: true
+        });
+    }
+    else{
+        console.log("Room not found");
+        res.json({
+            success:false,
+            msg: "Room not found"
+        })
+    }
+})
 const PORT = process.env.PORT || 7000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
