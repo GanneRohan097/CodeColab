@@ -78,7 +78,7 @@ const Room = () => {
             <div className="max-w-7xl mx-auto p-6">
                 <div className="bg-white rounded-lg p-5 flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold">Code Collab</h1>
+                        <h1 className="text-2xl font-bold">Code Colab</h1>
                         {isAdmin && <p>{userName}</p>}
                     </div>
 
