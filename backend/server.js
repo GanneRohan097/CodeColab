@@ -66,6 +66,18 @@ wss.on("connection", (ws) => {
             }
         }
 
+        if(data.type==="change-lang"){
+            for(const clients of rooms.get(data.roomId)){
+                clients.socket.send(
+                    JSON.stringify({
+                        type:"change-lang",
+                        lang:data.lang,
+                        username:data.username
+                    })
+                )
+            }
+        }
+
         //two way communication
     })
     ws.on("close", () => {

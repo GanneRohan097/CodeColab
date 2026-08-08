@@ -15,10 +15,11 @@ const Room = () => {
     const [loading, setLoading] = useState(false);
     const [code, setCode] = useState("// Start coding...");
     const [leavingUser, setLeavingUser] = useState("");
+    const [langChangedUser, setLangChangedUser] = useState("");
     //Without DB how data is sharing?
     //The data is not being stored anywhere. It is only living in your server's RAM
     useEffect(() => {
-        socket.current = new WebSocket("wss://codecolab-e7rb.onrender.com/");//ws://localhost:7000/  wss://codecolab-e7rb.onrender.com/
+        socket.current = new WebSocket("ws://localhost:7000/");//ws://localhost:7000/  wss://codecolab-e7rb.onrender.com/
         socket.current.onopen = () => {
             console.log("Connected to server");
             //socket.send("Hello server..");
@@ -50,6 +51,13 @@ const Room = () => {
                     setLeavingUser("");
                 }, 8500);
             }
+            if (data.type === "change-lang") {
+                setLanguage(data.lang);
+                setLangChangedUser(data.username)
+                setTimeout(() => {
+                    setLangChangedUser("");
+                }, 2500);
+            }
         }
         // ⬆️ receives msg from server
         return () => {
@@ -73,8 +81,21 @@ const Room = () => {
             navigate("/");
         }, 9000);
     }
+    async function changeLang(e) {
+        setLanguage(e.target.value);
+        socket.current.send(
+            JSON.stringify({
+                type: "change-lang",
+                lang: e.target.value,
+                username: userName,
+                roomId: id
+            })
+        )
+
+
+    }
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-blue-100">
             <div className="max-w-7xl mx-auto p-6">
                 <div className="bg-white rounded-lg p-5 flex justify-between items-center mb-6">
                     <div>
@@ -91,11 +112,11 @@ const Room = () => {
                 <div className="bg-white rounded-lg p-4 flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
                         <FaCode className="text-blue-600" />
-                        <span className="font-medium">Language</span>
+                        <span className="font-medium hidden md:block">Language</span>
 
                         <select
                             value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
+                            onChange={(e) => changeLang(e)}
                             className="border rounded-md px-3 py-2 outline-none"
                         >
                             <option value="javascript">JavaScript</option>
@@ -126,61 +147,68 @@ const Room = () => {
                 </div>
                 {leavingUser && (
                     <div className="flex bg-yellow-500 border border-yellow-300 font-semibold px-4 py-1  rounded mb-4 animate-pulse">
-                        {(leavingUser===userName)?"You":<p className="mr-1">{leavingUser} is</p>} leaving the room...
+                        {(leavingUser === userName) ? "You" : <p className="mr-1">{leavingUser} is</p>} leaving the room...
                     </div>
                 )}
-                <div className="bg-white rounded-lg p-5 mb-6">
-                    <h2 className="text-lg font-semibold mb-4">
-                        Participants ({participants.length})
-                    </h2>
+                {langChangedUser && (
+                    <div className="flex bg-blue-500 border font-semibold px-4 py-1  rounded mb-4 animate-pulse">
+                        {(langChangedUser === userName) ? "You" : <p className="mr-1">{langChangedUser}</p>} changed language to {language}
+                    </div>
+                )}
+                <div className="sm:flex w-[100%]">
+                    <div className="rounded-lg overflow-hidden h-[67vh] mb-4 w-[100%]">
+                        <Editor
+                            height="100%"
+                            language={language}
+                            theme="blue-dark"
+                            beforeMount={handleEditorWillMount}
+                            value={code}
+                            onChange={(value) => {
+                                const newCode = value || "";
+                                setCode(newCode);
 
-                    <div className="space-y-3">
-                        {participants.map((participant, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-between border border-gray-200 rounded-md px-4 py-3"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                                        {participant.charAt(0).toUpperCase()}
+                                socket.current.send(
+                                    JSON.stringify({
+                                        type: "code-change",
+                                        roomId: id,
+                                        code: newCode
+                                    })
+                                );
+                            }}
+
+                        />
+                    </div>
+                    <div className="bg-white rounded-r-lg p-5 mb-6 sm:w-[30%]">
+                        <h2 className="text-lg font-semibold mb-4">
+                            Participants ({participants.length})
+                        </h2>
+
+                        <div className="space-y-3 h-[51vh] overflow-y-scroll">
+                            {participants.map((participant, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center justify-between border border-gray-200 rounded-md px-4 py-3"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                                            {participant.charAt(0).toUpperCase()}
+                                        </div>
+
+                                        <span className="font-medium text-gray-800 hidden lg:block ">
+                                            {participant}
+                                        </span>
                                     </div>
 
-                                    <span className="font-medium text-gray-800">
-                                        {participant}
-                                    </span>
+                                    {participant === userName && (
+                                        <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                                            You
+                                        </span>
+                                    )}
                                 </div>
-
-                                {participant === userName && (
-                                    <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                                        You
-                                    </span>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
 
-
-                <div className="rounded-lg overflow-hidden h-[65vh] mb-4">
-                    <Editor
-                        height="100%"
-                        language={language}
-                        theme="blue-dark"
-                        beforeMount={handleEditorWillMount}
-                        value={code}
-                        onChange={(value) => {
-                            const newCode = value || "";
-                            setCode(newCode);
-
-                            socket.current.send(
-                                JSON.stringify({
-                                    type: "code-change",
-                                    roomId: id,
-                                    code: newCode
-                                })
-                            );
-                        }}
-                    />
                 </div>
 
                 {/* <div className="grid md:grid-cols-2 gap-4">
