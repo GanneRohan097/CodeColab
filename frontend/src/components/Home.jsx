@@ -15,7 +15,7 @@ export const Home = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:7000/getId");//http://localhost:7000/getId  https://codecolab-e7rb.onrender.com/getId
+      const res = await fetch(" https://codecolab-e7rb.onrender.com/getId");//http://localhost:7000/getId  https://codecolab-e7rb.onrender.com/getId
       const data = await res.json();
       setId(data.id);
       setLoading(false);
@@ -31,7 +31,7 @@ export const Home = () => {
   }
   async function joinRoom(e) {
     e.preventDefault();
-    const res = await fetch(`http://localhost:7000/join/${enteredId}`)
+    const res = await fetch(` https://codecolab-e7rb.onrender.com/join/${enteredId}`)
     const data = await res.json();
     if (data.success === true) {
       setRoomNotFound(false);
